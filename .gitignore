@@ -1,0 +1,14 @@
+# Ignore environment variable files
+.env
+*.env
+
+# Ignore TOML files (e.g., pyproject.toml if needed, or other config files)
+*.toml
+
+# Ignore directories starting with a dot (like .venv, .vscode, .idea)
+# The trailing slash ensures it only matches directories
+.*/
+
+# If you want to EXCLUDE a specific .toml file from being ignored,
+# you can add an exception with !. For example, to keep pyproject.toml:
+!pyproject.toml
