@@ -2,15 +2,64 @@ const modelSelect = document.getElementById('modelSelect');
 const apiKeyInput = document.getElementById('apiKey');
 const optionsForm = document.getElementById('optionsForm');
 const statusDiv = document.getElementById('status');
+const saveBtn = document.getElementById('saveBtn');
+const btnText = document.getElementById('btnText');
+const modelInfo = document.getElementById('modelInfo');
+
+// Model information mapping
+const modelInfoMap = {
+    cohere: 'High-quality summarization with excellent understanding',
+    openai: 'Advanced GPT-4 model for comprehensive and accurate summaries'
+};
 
 // Update API key input placeholder and value based on selected model
 function updateFormUI(selectedModel, keys) {
-    apiKeyInput.placeholder = `Enter API Key for ${selectedModel.charAt(0).toUpperCase() + selectedModel.slice(1)}`;
+    apiKeyInput.placeholder = `Enter your ${selectedModel === 'cohere' ? 'Cohere' : 'OpenAI'} API key`;
+    modelInfo.textContent = modelInfoMap[selectedModel];
+
     if (selectedModel === 'cohere') {
         apiKeyInput.value = keys.cohereApiKey || '';
     } else if (selectedModel === 'openai') {
         apiKeyInput.value = keys.openaiApiKey || '';
     }
+}
+
+// Show status message with animation
+function showStatus(message, isError = false) {
+    statusDiv.textContent = message;
+    statusDiv.className = `status show ${isError ? 'error' : 'success'}`;
+
+    setTimeout(() => {
+        statusDiv.className = 'status';
+    }, 3000);
+}
+
+// Update button state
+function updateButtonState(loading = false) {
+    if (loading) {
+        saveBtn.disabled = true;
+        btnText.textContent = 'Saving...';
+    } else {
+        saveBtn.disabled = false;
+        btnText.textContent = 'Save Settings';
+    }
+}
+
+// Validate API key format
+function validateApiKey(model, key) {
+    if (!key || key.trim().length === 0) {
+        return 'API key is required';
+    }
+
+    if (model === 'openai' && !key.startsWith('sk-')) {
+        return 'OpenAI API keys should start with "sk-"';
+    }
+
+    if (key.length < 10) {
+        return 'API key appears to be too short';
+    }
+
+    return null;
 }
 
 // Load saved settings when the options page is opened
@@ -32,8 +81,18 @@ modelSelect.addEventListener('change', () => {
 // Save settings on form submit
 optionsForm.addEventListener('submit', (e) => {
     e.preventDefault();
+
     const selectedModel = modelSelect.value;
-    const apiKey = apiKeyInput.value;
+    const apiKey = apiKeyInput.value.trim();
+
+    // Validate the API key
+    const validationError = validateApiKey(selectedModel, apiKey);
+    if (validationError) {
+        showStatus(validationError, true);
+        return;
+    }
+
+    updateButtonState(true);
 
     let settingsToSave = {
         selectedModel: selectedModel
@@ -46,9 +105,24 @@ optionsForm.addEventListener('submit', (e) => {
     }
 
     chrome.storage.sync.set(settingsToSave, () => {
-        statusDiv.textContent = 'Options saved.';
-        setTimeout(() => {
-            statusDiv.textContent = '';
-        }, 1500);
+        updateButtonState(false);
+        showStatus('Settings saved successfully! 🎉');
     });
+});
+
+// Add input validation feedback
+apiKeyInput.addEventListener('input', (e) => {
+    const key = e.target.value.trim();
+    const model = modelSelect.value;
+
+    if (key.length > 0) {
+        const validationError = validateApiKey(model, key);
+        if (validationError) {
+            apiKeyInput.style.borderColor = '#f56565';
+        } else {
+            apiKeyInput.style.borderColor = '#48bb78';
+        }
+    } else {
+        apiKeyInput.style.borderColor = '#e2e8f0';
+    }
 });

@@ -1,23 +1,58 @@
 {
-    "name": "condense-summarizer-chans",
-    "version": "1.0",
-    "description": "Summarizes web pages",
+    "name": "Page Summarizer",
+    "version": "2.0.0",
+    "description": "AI-powered web page summarizer with professional popup interface. Get instant, intelligent summaries using OpenAI or Cohere.",
     "manifest_version": 3,
+    "author": "Chandan Suri",
 
     "permissions": ["activeTab", "scripting", "storage"],
 
+    "icons": {
+        "16": "icons/icon-16.png",
+        "32": "icons/icon-32.png",
+        "48": "icons/icon-48.png",
+        "128": "icons/icon-128.png"
+    },
+
+    "action": {
+        "default_title": "Page Summarizer - Get instant AI summaries",
+        "default_icon": {
+            "16": "icons/icon-16.png",
+            "32": "icons/icon-32.png",
+            "48": "icons/icon-48.png",
+            "128": "icons/icon-128.png"
+        }
+    },
+
     "options_ui": {
         "page": "options/options.html",
-        "open_in_tab": false
+        "open_in_tab": true
     },
 
     "content_scripts": [{
-        "js": ["scripts/jquery-3.7.0.min.js", "scripts/content.js"],
-        "matches": [
-            "<all_urls>"
+        "js": [
+            "scripts/jquery-3.7.0.min.js",
+            "scripts/config.js",
+            "scripts/utils.js",
+            "scripts/ui.js",
+            "scripts/api.js",
+            "scripts/main.js"
         ],
-        "exclude_globs": [
-            "*://docs.google.com/*"
-        ]
-    }]
+        "matches": ["<all_urls>"],
+        "exclude_matches": [
+            "*://docs.google.com/*",
+            "*://drive.google.com/*"
+        ],
+        "run_at": "document_idle"
+    }],
+
+    "web_accessible_resources": [{
+        "resources": ["icons/*"],
+        "matches": ["<all_urls>"]
+    }],
+
+    "host_permissions": [
+        "https://api.openai.com/*",
+        "https://api.cohere.ai/*"
+    ]
 }

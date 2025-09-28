@@ -1,33 +1,269 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
     <head>
-        <title>Condense Options</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Page Summarizer - Settings</title>
         <style>
-            body { font-family: sans-serif; padding: 10px; width: 300px; }
-            form { display: flex; flex-direction: column; gap: 15px; }
-            label { display: flex; flex-direction: column; gap: 5px; }
-            input, select, button { padding: 8px; border-radius: 4px; border: 1px solid #ccc; }
-            button { background-color: #007bff; color: white; cursor: pointer; border: none; }
-            #status { margin-top: 10px; color: green; font-weight: bold; }
+            * {
+                margin: 0;
+                padding: 0;
+                box-sizing: border-box;
+            }
+
+            body {
+                font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                min-height: 100vh;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                padding: 20px;
+            }
+
+            .container {
+                background: white;
+                border-radius: 16px;
+                box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+                padding: 40px;
+                width: 100%;
+                max-width: 450px;
+                position: relative;
+                overflow: hidden;
+            }
+
+            .container::before {
+                content: '';
+                position: absolute;
+                top: 0;
+                left: 0;
+                right: 0;
+                height: 4px;
+                background: linear-gradient(90deg, #667eea, #764ba2);
+            }
+
+            .header {
+                text-align: center;
+                margin-bottom: 32px;
+            }
+
+            .icon {
+                width: 64px;
+                height: 64px;
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                border-radius: 16px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                margin: 0 auto 16px;
+                font-size: 28px;
+                color: white;
+            }
+
+            h1 {
+                color: #2d3748;
+                font-size: 24px;
+                font-weight: 600;
+                margin-bottom: 8px;
+            }
+
+            .subtitle {
+                color: #718096;
+                font-size: 14px;
+                line-height: 1.5;
+            }
+
+            .form-group {
+                margin-bottom: 24px;
+            }
+
+            .form-label {
+                display: block;
+                color: #2d3748;
+                font-size: 14px;
+                font-weight: 500;
+                margin-bottom: 8px;
+            }
+
+            .select-wrapper {
+                position: relative;
+            }
+
+            select {
+                width: 100%;
+                padding: 12px 40px 12px 16px;
+                border: 2px solid #e2e8f0;
+                border-radius: 8px;
+                background: white;
+                color: #2d3748;
+                font-size: 14px;
+                cursor: pointer;
+                transition: all 0.2s ease;
+                appearance: none;
+            }
+
+            select:focus {
+                outline: none;
+                border-color: #667eea;
+                box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+            }
+
+            .select-arrow {
+                position: absolute;
+                right: 12px;
+                top: 50%;
+                transform: translateY(-50%);
+                pointer-events: none;
+                color: #718096;
+            }
+
+            .input-wrapper {
+                position: relative;
+            }
+
+            input[type="password"] {
+                width: 100%;
+                padding: 12px 16px;
+                border: 2px solid #e2e8f0;
+                border-radius: 8px;
+                background: white;
+                color: #2d3748;
+                font-size: 14px;
+                transition: all 0.2s ease;
+            }
+
+            input[type="password"]:focus {
+                outline: none;
+                border-color: #667eea;
+                box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+            }
+
+            input[type="password"]::placeholder {
+                color: #a0aec0;
+            }
+
+            .save-btn {
+                width: 100%;
+                padding: 12px 24px;
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                color: white;
+                border: none;
+                border-radius: 8px;
+                font-size: 14px;
+                font-weight: 500;
+                cursor: pointer;
+                transition: all 0.2s ease;
+                position: relative;
+                overflow: hidden;
+            }
+
+            .save-btn:hover {
+                transform: translateY(-1px);
+                box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+            }
+
+            .save-btn:active {
+                transform: translateY(0);
+            }
+
+            .save-btn:disabled {
+                opacity: 0.6;
+                cursor: not-allowed;
+                transform: none;
+            }
+
+            .status {
+                margin-top: 16px;
+                padding: 12px;
+                border-radius: 8px;
+                font-size: 14px;
+                font-weight: 500;
+                text-align: center;
+                opacity: 0;
+                transform: translateY(-10px);
+                transition: all 0.3s ease;
+            }
+
+            .status.show {
+                opacity: 1;
+                transform: translateY(0);
+            }
+
+            .status.success {
+                background: #f0fff4;
+                color: #22543d;
+                border: 1px solid #9ae6b4;
+            }
+
+            .status.error {
+                background: #fed7d7;
+                color: #742a2a;
+                border: 1px solid #feb2b2;
+            }
+
+            .info-box {
+                background: #ebf8ff;
+                border: 1px solid #bee3f8;
+                border-radius: 8px;
+                padding: 12px;
+                margin-bottom: 24px;
+            }
+
+            .info-box p {
+                color: #2a69ac;
+                font-size: 13px;
+                line-height: 1.4;
+            }
+
+            .model-info {
+                font-size: 12px;
+                color: #718096;
+                margin-top: 4px;
+            }
         </style>
     </head>
     <body>
-        <h3>Settings</h3>
-        <form id="optionsForm">
-            <label for="modelSelect">
-                Summarization Model:
-                <select id="modelSelect" name="modelSelect">
-                    <option value="cohere">Cohere</option>
-                    <option value="openai">OpenAI</option>
-                </select>
-            </label>
-            <label for="apiKey">
-                API Key:
-                <input type="password" id="apiKey" name="apiKey" required placeholder="Enter API Key for selected model">
-            </label>
-            <button type="submit">Save</button>
-        </form>
-        <div id="status"></div>
+        <div class="container">
+            <div class="header">
+                <div class="icon">📄</div>
+                <h1>Page Summarizer</h1>
+                <p class="subtitle">Configure your AI summarization preferences</p>
+            </div>
+
+            <div class="info-box">
+                <p>Your API keys are stored locally and never shared. Get your API key from the provider's dashboard.</p>
+            </div>
+
+            <form id="optionsForm">
+                <div class="form-group">
+                    <label class="form-label" for="modelSelect">AI Model Provider</label>
+                    <div class="select-wrapper">
+                        <select id="modelSelect" name="modelSelect">
+                            <option value="cohere">Cohere</option>
+                            <option value="openai">OpenAI</option>
+                        </select>
+                        <div class="select-arrow">▼</div>
+                    </div>
+                    <div class="model-info" id="modelInfo">
+                        High-quality summarization with excellent understanding
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="apiKey">API Key</label>
+                    <div class="input-wrapper">
+                        <input type="password" id="apiKey" name="apiKey" required placeholder="Enter your API key">
+                    </div>
+                </div>
+
+                <button type="submit" class="save-btn" id="saveBtn">
+                    <span id="btnText">Save Settings</span>
+                </button>
+            </form>
+
+            <div id="status" class="status"></div>
+        </div>
+
         <script src="options.js"></script>
     </body>
 </html>
